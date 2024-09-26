@@ -1,0 +1,4 @@
+NatsServers: ["nats://localhost:4222"]
+server:
+  port: "3000"
+  mode: "release"

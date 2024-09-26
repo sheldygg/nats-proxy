@@ -1,0 +1,2 @@
+::1 - - [27/Sep/2024:01:13:38 +0200] "POST /request HTTP/1.1 200 11.225ms " " python-requests/2.32.3" " "
+::1 - - [27/Sep/2024:01:13:39 +0200] "POST /request HTTP/1.1 200 4.536917ms " " python-requests/2.32.3" " "
