@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"github.com/gin-gonic/gin"
 	"github.com/nats-io/nats.go"
 	"log"
@@ -22,13 +23,18 @@ type AppContext struct {
 func (ctx *AppContext) Request(c *gin.Context) {
 	var request RequestData
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"ok": false, "error": err.Error()})
 		return
 	}
 
 	var msg = nats.NewMsg(request.Subject)
 	msg.Header = request.Header
-	msg.Data = []byte(request.Data)
+	decodedData, err := base64.StdEncoding.DecodeString(request.Data)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ok": false, "error": err.Error()})
+		return
+	}
+	msg.Data = decodedData
 
 	log.Printf("Received Msg: Subject: %s, Header: %v, Data: %s", msg.Subject, msg.Header, string(msg.Data))
 
