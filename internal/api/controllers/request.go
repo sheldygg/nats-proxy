@@ -40,8 +40,20 @@ func (ctx *AppContext) Request(c *gin.Context) {
 
 	response, err := ctx.Nats.RequestMsg(msg, time.Duration(request.Timeout)*time.Second)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"ok": false, "response": err.Error()})
-	} else {
-		c.JSON(http.StatusOK, gin.H{"ok": true, "response": string(response.Data)})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"ok":    false,
+			"error": err.Error(),
+		})
+		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"ok": true,
+		"response": gin.H{
+			"subject": response.Subject,
+			"reply":   response.Reply,
+			"data":    response.Data,
+			"header":  response.Header,
+		},
+	})
 }
