@@ -13,7 +13,7 @@ type RequestData struct {
 	Subject string              `json:"subject" binding:"required"`
 	Header  map[string][]string `json:"headers" binding:"required"`
 	Data    string              `json:"data" binding:"required"`
-	Timeout int                 `json:"timeout" binding:"required"`
+	Timeout float64             `json:"timeout" binding:"required"`
 }
 
 type AppContext struct {
@@ -38,7 +38,8 @@ func (ctx *AppContext) Request(c *gin.Context) {
 
 	log.Printf("Received Msg: Subject: %s, Header: %v, Data: %s", msg.Subject, msg.Header, string(msg.Data))
 
-	response, err := ctx.Nats.RequestMsg(msg, time.Duration(request.Timeout)*time.Second)
+	timeoutDuration := time.Duration(request.Timeout * float64(time.Second))
+	response, err := ctx.Nats.RequestMsg(msg, timeoutDuration)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"ok":    false,
